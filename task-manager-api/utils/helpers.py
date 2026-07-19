@@ -1,10 +1,20 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 import os
 import json
 import sys
 import math
 import hashlib
+
+
+def utcnow():
+    """
+    Retorna um datetime "naive" (sem tzinfo) representando o instante atual em UTC.
+    Substitui `datetime.utcnow()`, que está deprecated desde o Python 3.12, sem introduzir
+    datetimes timezone-aware (o que quebraria comparações com colunas SQLite existentes).
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 
 def format_date(date_obj):
     if date_obj:
@@ -35,7 +45,7 @@ def generate_id():
 
 def log_action(action, details=None):
 
-    timestamp = datetime.utcnow()
+    timestamp = utcnow()
     print(f"[{timestamp}] ACTION: {action}")
     if details:
         print(f"  DETAILS: {details}")
